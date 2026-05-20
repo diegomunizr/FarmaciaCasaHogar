@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmacia — Casa Hogar Misericordia III</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ── Variables ───────────────────────────────────────────────── */
+        :root {
+            --bg:          #0d1117;
+            --bg-2:        #161b22;
+            --bg-3:        #1c2230;
+            --border:      #30363d;
+            --border-2:    #21262d;
+            --text:        #e6edf3;
+            --text-muted:  #7d8590;
+            --text-dim:    #484f58;
+            --accent:      #58a6ff;
+            --accent-dim:  #1f3a5f;
+            --success:     #3fb950;
+            --success-dim: #1a3a24;
+            --warn:        #d29922;
+            --warn-dim:    #3d2f0a;
+            --danger:      #f85149;
+            --danger-dim:  #3d1a19;
+            --radius:      8px;
+            --radius-sm:   5px;
+            --mono:        'IBM Plex Mono', monospace;
+            --sans:        'IBM Plex Sans', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            min-height: 100vh;
+        }
+
+        /* ── Topbar ──────────────────────────────────────────────────── */
+        .topbar {
+            background: var(--bg-2);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar-logo { display: flex; align-items: center; gap: 12px; }
+        .topbar-logo-mark {
+            background: var(--accent);
+            color: var(--bg);
+            font-family: var(--mono);
+            font-weight: 500;
+            font-size: 13px;
+            width: 32px; height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .topbar-title { font-weight: 600; font-size: 13px; }
+        .topbar-subtitle { font-size: 11px; color: var(--text-muted); }
+        .topbar-actions { display: flex; gap: 8px; }
+        .btn-topbar {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 12px;
+            font-family: var(--sans);
+            transition: all .15s;
+        }
+        .btn-topbar:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        /* ── Pantallas ───────────────────────────────────────────────── */
+        .screen { display: none; }
+        .screen.activa { display: block; }
+
+        /* ── Pantalla 1: Usuarios ────────────────────────────────────── */
+        .bienvenida {
+            padding: 48px 32px 24px;
+            text-align: center;
+        }
+        .bienvenida-hora {
+            font-family: var(--mono);
+            font-size: 48px;
+            font-weight: 400;
+            color: var(--text);
+            letter-spacing: -1px;
+        }
+        .bienvenida-fecha {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-transform: capitalize;
+        }
+        .bienvenida-label {
+            margin-top: 32px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+        }
+        .usuarios-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            padding: 20px 32px 48px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .usuario-btn {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text);
+            font-family: var(--sans);
+            transition: all .15s;
+            min-width: 200px;
+        }
+        .usuario-btn:hover {
+            border-color: var(--accent);
+            background: var(--bg-3);
+            transform: translateY(-1px);
+        }
+        .usuario-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        .color-0 { background: #1f3a5f; color: #58a6ff; }
+        .color-1 { background: #1a3a24; color: #3fb950; }
+        .color-2 { background: #3d2f0a; color: #d29922; }
+        .color-3 { background: #3d1a19; color: #f85149; }
+        .color-4 { background: #2d1f4a; color: #bc8cff; }
+        .usuario-nombre { font-size: 13px; font-weight: 500; text-align: left; }
+        .usuario-rol { font-size: 11px; color: var(--text-muted); text-align: left; }
+
+        /* ── Pantalla 2: Visita ──────────────────────────────────────── */
+        .visita-header {
+            background: var(--bg-2);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .visita-titulo { font-size: 14px; font-weight: 600; }
+        .btn-volver {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            font-family: var(--sans);
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            transition: color .15s;
+        }
+        .btn-volver:hover { color: var(--text); }
+        .visita-usuario-badge { display: flex; align-items: center; gap: 10px; }
+        .badge-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--mono);
+            font-size: 11px;
+        }
+        .badge-nombre { font-size: 13px; font-weight: 500; }
+        .badge-rol { font-size: 11px; color: var(--text-muted); }
+
+        .visita-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            height: calc(100vh - 113px);
+        }
+
+        .panel-busqueda {
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+        .panel-visita {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .seccion-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+        .buscador-wrap {
+            display: flex;
+            align-items: center;
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0 12px;
+        }
+        .buscador-wrap:focus-within { border-color: var(--accent); }
+        .buscador-icon { color: var(--text-dim); margin-right: 8px; font-size: 14px; }
+        .buscador-wrap input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            padding: 10px 0;
+            width: 100%;
+        }
+        .buscador-wrap input::placeholder { color: var(--text-dim); }
+
+        #resultados-lista { display: flex; flex-direction: column; gap: 4px; }
+        .sin-resultados {
+            color: var(--text-dim);
+            font-size: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .item-resultado {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: var(--bg-2);
+            border: 1px solid var(--border-2);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all .12s;
+        }
+        .item-resultado:hover {
+            border-color: var(--accent);
+            background: var(--bg-3);
+        }
+        .item-nombre-res { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .item-presentacion-res { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .item-tipo-badge {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: var(--mono);
+        }
+        .tipo-medicamento { background: var(--accent-dim); color: var(--accent); }
+        .tipo-material    { background: var(--warn-dim);   color: var(--warn); }
+
+        /* Form item seleccionado */
+        #form-item { display: none; }
+        #form-item.visible { display: block; }
+        .form-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px;
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+        }
+        .form-item-nombre { font-size: 14px; font-weight: 600; }
+        .form-item-pres { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 11px; color: var(--text-muted); }
+        .form-group input,
+        .form-group select {
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            padding: 8px 10px;
+            font-size: 13px;
+            font-family: var(--sans);
+            outline: none;
+            transition: border-color .15s;
+        }
+        .form-group input:focus,
+        .form-group select:focus { border-color: var(--accent); }
+        .form-group input.error { border-color: var(--danger); }
+        .form-group select option { background: var(--bg-2); }
+
+        .btn-agregar {
+            width: 100%;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 13px;
+            font-family: var(--sans);
+            font-weight: 500;
+            margin-top: 10px;
+            transition: all .15s;
+        }
+        .btn-agregar:hover { background: var(--accent); color: var(--bg); }
+
+        .btn-eliminar-item {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+            transition: color .15s;
+            line-height: 1;
+        }
+        .btn-eliminar-item:hover { color: var(--danger); }
+
+        /* Panel visita */
+        .visita-lista-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .visita-contador {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--bg-3);
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+        #lista-visita { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .lista-vacia {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-dim);
+            font-size: 12px;
+            padding: 40px 0;
+        }
+        .lista-vacia-icon { font-size: 28px; }
+        .item-visita {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: var(--bg-2);
+            border: 1px solid var(--border-2);
+            border-radius: var(--radius-sm);
+        }
+        .item-visita-nombre { font-size: 13px; font-weight: 500; }
+        .item-visita-meta {
+            display: flex;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            flex-wrap: wrap;
+        }
+        .lote {
+            font-family: var(--mono);
+            font-size: 10px;
+            background: var(--bg-3);
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: var(--text-muted);
+        }
+
+        .btn-registrar {
+            background: var(--success-dim);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: var(--sans);
+            width: 100%;
+            transition: all .15s;
+            margin-top: auto;
+        }
+        .btn-registrar:hover:not(:disabled) { background: var(--success); color: var(--bg); }
+        .btn-registrar:disabled { opacity: .4; cursor: not-allowed; }
+
+        /* ── Pantalla 3: Confirmación ────────────────────────────────── */
+        #pantalla-confirmacion {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 56px);
+            padding: 32px;
+        }
+        #pantalla-confirmacion.activa { display: flex; }
+        .confirmacion-card {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            max-width: 560px;
+            width: 100%;
+        }
+        .confirmacion-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .confirmacion-check {
+            width: 48px; height: 48px;
+            background: var(--success-dim);
+            border: 2px solid var(--success);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            color: var(--success);
+            flex-shrink: 0;
+        }
+        .confirmacion-titulo { font-size: 18px; font-weight: 600; }
+        .confirmacion-subtitulo { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .confirmacion-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-3);
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+        }
+        .meta-item { display: flex; flex-direction: column; gap: 3px; }
+        .meta-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); }
+        .meta-valor { font-size: 13px; font-weight: 500; }
+        .confirmacion-items { display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px; }
+        .conf-item {
+            display: grid;
+            grid-template-columns: 24px 1fr auto auto;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            background: var(--bg-3);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+        }
+        .conf-item-num {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+        .conf-item-nombre { font-weight: 500; }
+        .conf-item-nombre small { color: var(--text-muted); font-size: 11px; }
+        .conf-item-meta { display: flex; gap: 6px; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .conf-cantidad {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--accent);
+            background: var(--accent-dim);
+            padding: 2px 7px;
+            border-radius: 3px;
+        }
+        .conf-destino {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .confirmacion-footer { display: flex; justify-content: flex-end; }
+        .btn-nueva-visita {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-family: var(--sans);
+            font-size: 13px;
+            transition: all .15s;
+        }
+        .btn-nueva-visita:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ── Modales ─────────────────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+        .modal-box {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            width: 100%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .modal-titulo { font-size: 14px; font-weight: 600; }
+        .modal-cerrar {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            line-height: 1;
+            transition: color .15s;
+        }
+        .modal-cerrar:hover { color: var(--danger); }
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Modal tabs */
+        .modal-tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+        .modal-tab {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 12px;
+            font-family: var(--sans);
+            transition: all .15s;
+        }
+        .modal-tab.active {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Inventario tabla */
+        .inv-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .inv-tabla th {
+            text-align: left;
+            padding: 8px 10px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+        .inv-tabla td {
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--border-2);
+        }
+        .inv-tabla tr:last-child td { border-bottom: none; }
+        .inv-tabla tr:hover td { background: var(--bg-3); }
+
+        .stock-badge {
+            font-size: 10px;
+            font-family: var(--mono);
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        .stock-ok          { background: var(--success-dim); color: var(--success); }
+        .stock-advertencia { background: var(--warn-dim);    color: var(--warn); }
+        .stock-critico     { background: var(--danger-dim);  color: var(--danger); }
+
+        /* Gestion forms */
+        .gestion-form { display: flex; flex-direction: column; gap: 14px; }
+        .gestion-form-group { display: flex; flex-direction: column; gap: 5px; }
+        .gestion-form-group label { font-size: 11px; color: var(--text-muted); }
+        .gestion-form-group input,
+        .gestion-form-group select {
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            padding: 9px 11px;
+            font-size: 13px;
+            font-family: var(--sans);
+            outline: none;
+            transition: border-color .15s;
+        }
+        .gestion-form-group input:focus,
+        .gestion-form-group select:focus { border-color: var(--accent); }
+        .gestion-form-group select option { background: var(--bg-2); }
+        .gestion-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .gestion-buttons { display: flex; gap: 8px; margin-top: 6px; }
+        .btn-gestion {
+            padding: 9px 18px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            font-family: var(--sans);
+            font-weight: 500;
+            border: 1px solid;
+            transition: all .15s;
+        }
+        .btn-gestion-primary {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .btn-gestion-primary:hover { background: var(--accent); color: var(--bg); }
+        .btn-gestion-secondary {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+        .btn-gestion-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+
+        /* Tabla botones */
+        .btn-tabla {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 11px;
+            font-family: var(--sans);
+            transition: all .12s;
+        }
+        .btn-tabla-eliminar:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
+        .btn-tabla-editar:hover   { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+        .tabla-acciones { display: flex; gap: 4px; }
+
+        /* Usuarios lista en modal */
+        .usuarios-lista { display: flex; flex-direction: column; gap: 6px; }
+        .usuario-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: var(--bg-3);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-2);
+        }
+        .usuario-item-nombre { font-size: 13px; font-weight: 500; }
+        .usuario-item-rol { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        /* ── Toast ───────────────────────────────────────────────────── */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 9999;
+        }
+        .toast {
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            border: 1px solid;
+            animation: slideIn .2s ease;
+            max-width: 300px;
+        }
+        .toast-success { background: var(--success-dim); border-color: var(--success); color: var(--success); }
+        .toast-error   { background: var(--danger-dim);  border-color: var(--danger);  color: var(--danger); }
+        .toast-info    { background: var(--bg-3);        border-color: var(--border);  color: var(--text-muted); }
+        @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: none; } }
+
+        /* ── Loading ─────────────────────────────────────────────────── */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 9999;
+        }
+        .loading-logo {
+            background: var(--accent);
+            color: var(--bg);
+            font-family: var(--mono);
+            font-size: 20px;
+            width: 48px; height: 48px;
+            border-radius: var(--radius);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .loading-text { color: var(--text-muted); font-size: 13px; }
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.2s infinite;
+        }
+        @keyframes dots {
+            0%   { content: ''; }
+            33%  { content: '.'; }
+            66%  { content: '..'; }
+            100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Loading screen -->
+<div id="loading-screen">
+    <div class="loading-logo">Rx</div>
+    <div class="loading-text loading-dots">Iniciando sistema</div>
+</div>
+
+<div id="app" style="display:none">
+
+    <header class="topbar">
+        <div class="topbar-logo">
+            <div class="topbar-logo-mark">Rx</div>
+            <div>
+                <div class="topbar-title">Farmacia · Casa Hogar Misericordia III</div>
+                <div class="topbar-subtitle">Sistema de Registro de Salida</div>
+            </div>
+        </div>
+        <div class="topbar-actions">
+            <button class="btn-topbar" onclick="mostrarInventario()">📦 Inventario</button>
+            <button class="btn-topbar" onclick="mostrarBitacora()">📋 Bitácora</button>
+            <button class="btn-topbar" onclick="mostrarGestionInventario()">➕ Agregar Ítem</button>
+            <button class="btn-topbar" onclick="mostrarGestionPerfiles()">👥 Perfiles</button>
+        </div>
+    </header>
+
+    <!-- PANTALLA 1 -->
+    <section id="pantalla-usuarios" class="screen activa">
+        <div class="bienvenida">
+            <div class="bienvenida-hora" id="reloj">--:--</div>
+            <div class="bienvenida-fecha" id="fecha-actual">---</div>
+            <div class="bienvenida-label">¿Quién eres?</div>
+        </div>
+        <div class="usuarios-grid" id="usuarios-grid"></div>
+    </section>
+
+    <!-- PANTALLA 2 -->
+    <section id="pantalla-visita" class="screen">
+        <div class="visita-header">
+            <div style="display:flex;align-items:center;gap:16px">
+                <button class="btn-volver" onclick="volverAUsuarios()">← Cambiar usuario</button>
+                <div class="visita-titulo">Registrar salida</div>
+            </div>
+            <div class="visita-usuario-badge">
+                <div class="badge-avatar color-0" id="badge-avatar">--</div>
+                <div>
+                    <div class="badge-nombre" id="badge-nombre">—</div>
+                    <div class="badge-rol" id="badge-rol">—</div>
+                </div>
+            </div>
+        </div>
+        <div class="visita-content">
+            <div class="panel-busqueda">
+                <div>
+                    <div class="seccion-label">Buscar medicamento o material</div>
+                    <div class="buscador-wrap">
+                        <span class="buscador-icon">🔍</span>
+                        <input type="text" id="buscador-input" placeholder="Escribir nombre..." autocomplete="off" spellcheck="false">
+                    </div>
+                </div>
+                <div id="resultados-lista">
+                    <div class="sin-resultados">Empieza a escribir para buscar</div>
+                </div>
+                <div id="form-item">
+                    <div class="form-item-header">
+                        <div>
+                            <div class="form-item-nombre" id="form-item-nombre">—</div>
+                            <div class="form-item-pres" id="form-item-pres">—</div>
+                        </div>
+                        <button class="btn-eliminar-item" onclick="limpiarSeleccion()" title="Cancelar">✕</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="input-lote">Número de lote *</label>
+                            <input type="text" id="input-lote" placeholder="Ej. SL2523" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label for="input-cantidad">Cantidad *</label>
+                            <input type="number" id="input-cantidad" min="1" value="1">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:10px">
+                        <label for="select-destino">Cuarto de destino *</label>
+                        <select id="select-destino">
+                            <option value="">— Seleccionar cuarto —</option>
+                            <option value="C1">C1</option>
+                            <option value="C2">C2</option>
+                            <option value="C3">C3</option>
+                            <option value="C4">C4</option>
+                            <option value="CC1">CC1</option>
+                            <option value="CC2">CC2</option>
+                            <option value="C12">C12</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-top:10px">
+                        <label for="input-notas">Notas (opcional)</label>
+                        <input type="text" id="input-notas" placeholder="Observaciones..." autocomplete="off">
+                    </div>
+                    <button class="btn-agregar" onclick="agregarItemAVisita()">＋ Agregar a la visita</button>
+                </div>
+            </div>
+            <div class="panel-visita">
+                <div class="visita-lista-header">
+                    <div class="seccion-label" style="margin-bottom:0">Esta visita</div>
+                    <span class="visita-contador" id="visita-contador">0 ítems</span>
+                </div>
+                <div id="lista-visita">
+                    <div class="lista-vacia">
+                        <div class="lista-vacia-icon">🧺</div>
+                        <div>Aún no has agregado ítems</div>
+                    </div>
+                </div>
+                <button class="btn-registrar" id="btn-registrar" disabled onclick="registrarVisita()">
+                    ✓ Registrar visita
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- PANTALLA 3 -->
+    <section id="pantalla-confirmacion" class="screen">
+        <div class="confirmacion-card">
+            <div class="confirmacion-header">
+                <div class="confirmacion-check">✓</div>
+                <div>
+                    <div class="confirmacion-titulo">Visita registrada</div>
+                    <div class="confirmacion-subtitulo">Los registros se guardaron correctamente</div>
+                </div>
+            </div>
+            <div class="confirmacion-meta">
+                <div class="meta-item"><span class="meta-label">Usuario</span><span class="meta-valor" id="conf-usuario">—</span></div>
+                <div class="meta-item"><span class="meta-label">Fecha</span><span class="meta-valor" id="conf-fecha">—</span></div>
+                <div class="meta-item"><span class="meta-label">Hora</span><span class="meta-valor" id="conf-hora">—</span></div>
+                <div class="meta-item"><span class="meta-label">Ítems</span><span class="meta-valor" id="conf-total">—</span></div>
+            </div>
+            <div class="confirmacion-items" id="conf-lista-items"></div>
+            <div class="confirmacion-footer">
+                <button class="btn-nueva-visita" onclick="nuevaVisita()">↩ Nueva visita</button>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+'use strict';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BASE DE DATOS — IndexedDB (reemplaza SQLite/Electron)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DB_NAME    = 'farmacia_db';
+const DB_VERSION = 1;
+let idb;
+
+const DATOS_INICIALES = {
+    usuarios: [
+        { id: 1, nombre: 'Jefa de Enfermeras',   iniciales: 'JE', rol: 'Enfermería',  activo: 1 },
+        { id: 2, nombre: 'Enfermera Turno A',     iniciales: 'EA', rol: 'Enfermería',  activo: 1 },
+        { id: 3, nombre: 'Enfermera Turno B',     iniciales: 'EB', rol: 'Enfermería',  activo: 1 },
+        { id: 4, nombre: 'Auxiliar de Farmacia',  iniciales: 'AF', rol: 'Farmacia',    activo: 1 },
+    ],
+    items: [
+        // Medicamentos
+        { nombre:'Omeprazol',            presentacion:'Cap.',    tipo:'medicamento', stock_actual:50,  stock_minimo:10, activo:1 },
+        { nombre:'Pulmicort',            presentacion:'Sol.',    tipo:'medicamento', stock_actual:20,  stock_minimo:5,  activo:1 },
+        { nombre:'Levetiracetam',        presentacion:'Tab.',    tipo:'medicamento', stock_actual:60,  stock_minimo:10, activo:1 },
+        { nombre:'Lactulosa',            presentacion:'Sol.',    tipo:'medicamento', stock_actual:15,  stock_minimo:5,  activo:1 },
+        { nombre:'Contumax',             presentacion:'Cap.',    tipo:'medicamento', stock_actual:30,  stock_minimo:5,  activo:1 },
+        { nombre:'Valproato semisódico', presentacion:'Tab.',    tipo:'medicamento', stock_actual:40,  stock_minimo:10, activo:1 },
+        { nombre:'Fluoxetina',           presentacion:'Cap.',    tipo:'medicamento', stock_actual:45,  stock_minimo:10, activo:1 },
+        { nombre:'Haloperidol',          presentacion:'Tab.',    tipo:'medicamento', stock_actual:35,  stock_minimo:10, activo:1 },
+        { nombre:'Lysomucil',            presentacion:'Sobre',   tipo:'medicamento', stock_actual:25,  stock_minimo:5,  activo:1 },
+        { nombre:'Hiperton',             presentacion:'Sol.',    tipo:'medicamento', stock_actual:10,  stock_minimo:5,  activo:1 },
+        { nombre:'Óxido de zinc',        presentacion:'Crema',   tipo:'medicamento', stock_actual:12,  stock_minimo:3,  activo:1 },
+        { nombre:'Paracetamol',          presentacion:'Tab.',    tipo:'medicamento', stock_actual:80,  stock_minimo:15, activo:1 },
+        { nombre:'Ibuprofeno',           presentacion:'Tab.',    tipo:'medicamento', stock_actual:60,  stock_minimo:10, activo:1 },
+        { nombre:'Metformina',           presentacion:'Tab.',    tipo:'medicamento', stock_actual:55,  stock_minimo:10, activo:1 },
+        { nombre:'Enalapril',            presentacion:'Tab.',    tipo:'medicamento', stock_actual:40,  stock_minimo:10, activo:1 },
+        { nombre:'Lorazepam',            presentacion:'Tab.',    tipo:'medicamento', stock_actual:20,  stock_minimo:5,  activo:1 },
+        { nombre:'Clonazepam',           presentacion:'Tab.',    tipo:'medicamento', stock_actual:25,  stock_minimo:5,  activo:1 },
+        { nombre:'Risperidona',          presentacion:'Tab.',    tipo:'medicamento', stock_actual:30,  stock_minimo:5,  activo:1 },
+        { nombre:'Quetiapina',           presentacion:'Tab.',    tipo:'medicamento', stock_actual:20,  stock_minimo:5,  activo:1 },
+        { nombre:'Metoclopramida',       presentacion:'Tab.',    tipo:'medicamento', stock_actual:30,  stock_minimo:5,  activo:1 },
+        // Materiales
+        { nombre:'Jeringas de insulina', presentacion:'Pieza',   tipo:'material', stock_actual:100, stock_minimo:20, activo:1 },
+        { nombre:'Jeringas 5mL',         presentacion:'Pieza',   tipo:'material', stock_actual:80,  stock_minimo:15, activo:1 },
+        { nombre:'Jeringas 10mL',        presentacion:'Pieza',   tipo:'material', stock_actual:80,  stock_minimo:15, activo:1 },
+        { nombre:'Gasas estériles',      presentacion:'Paquete', tipo:'material', stock_actual:40,  stock_minimo:10, activo:1 },
+        { nombre:'Guantes Ambiderm',     presentacion:'Par',     tipo:'material', stock_actual:60,  stock_minimo:15, activo:1 },
+        { nombre:'Solución fisiológica', presentacion:'Frasco',  tipo:'material', stock_actual:25,  stock_minimo:5,  activo:1 },
+        { nombre:'Bolsas colostomía',    presentacion:'Pieza',   tipo:'material', stock_actual:30,  stock_minimo:8,  activo:1 },
+        { nombre:'Bolsas ileostomía',    presentacion:'Pieza',   tipo:'material', stock_actual:25,  stock_minimo:8,  activo:1 },
+        { nombre:'Toallas húmedas',      presentacion:'Paquete', tipo:'material', stock_actual:20,  stock_minimo:5,  activo:1 },
+        { nombre:'Lancetas',             presentacion:'Pieza',   tipo:'material', stock_actual:150, stock_minimo:30, activo:1 },
+        { nombre:'Ensure',               presentacion:'Lata',    tipo:'material', stock_actual:18,  stock_minimo:5,  activo:1 },
+        { nombre:'Tiras reactivas',      presentacion:'Pieza',   tipo:'material', stock_actual:100, stock_minimo:25, activo:1 },
+        { nombre:'Alcohol 70%',          presentacion:'Frasco',  tipo:'material', stock_actual:15,  stock_minimo:5,  activo:1 },
+        { nombre:'Cinta micropore',      presentacion:'Rollo',   tipo:'material', stock_actual:12,  stock_minimo:3,  activo:1 },
+        { nombre:'Apósitos',             presentacion:'Pieza',   tipo:'material', stock_actual:50,  stock_minimo:10, activo:1 },
+        { nombre:'Abatelenguas',         presentacion:'Pieza',   tipo:'material', stock_actual:80,  stock_minimo:20, activo:1 },
+        { nombre:'Torundas de algodón',  presentacion:'Pieza',   tipo:'material', stock_actual:200, stock_minimo:40, activo:1 },
+        { nombre:'Guantes de látex',     presentacion:'Par',     tipo:'material', stock_actual:50,  stock_minimo:10, activo:1 },
+        { nombre:'Cubrebocas',           presentacion:'Pieza',   tipo:'material', stock_actual:60,  stock_minimo:15, activo:1 },
+        { nombre:'Termómetro digital',   presentacion:'Pieza',   tipo:'material', stock_actual:4,   stock_minimo:1,  activo:1 },
+    ]
+};
+
+function abrirDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = e => {
+            const db = e.target.result;
+            // Usuarios
+            if (!db.objectStoreNames.contains('usuarios')) {
+                const s = db.createObjectStore('usuarios', { keyPath: 'id', autoIncrement: true });
+                s.createIndex('activo', 'activo');
+            }
+            // Items
+            if (!db.objectStoreNames.contains('items')) {
+                const s = db.createObjectStore('items', { keyPath: 'id', autoIncrement: true });
+                s.createIndex('activo', 'activo');
+                s.createIndex('tipo', 'tipo');
+            }
+            // Visitas
+            if (!db.objectStoreNames.contains('visitas')) {
+                const s = db.createObjectStore('visitas', { keyPath: 'id', autoIncrement: true });
+                s.createIndex('usuario_id', 'usuario_id');
+            }
+            // Salidas
+            if (!db.objectStoreNames.contains('salidas')) {
+                const s = db.createObjectStore('salidas', { keyPath: 'id', autoIncrement: true });
+                s.createIndex('visita_id', 'visita_id');
+                s.createIndex('item_id', 'item_id');
+            }
+        };
+        req.onsuccess = e => resolve(e.target.result);
+        req.onerror   = e => reject(e.target.error);
+    });
+}
+
+function idbGet(store, key) {
+    return new Promise((res, rej) => {
+        const tx = idb.transaction(store, 'readonly');
+        const req = tx.objectStore(store).get(key);
+        req.onsuccess = () => res(req.result);
+        req.onerror   = () => rej(req.error);
+    });
+}
+function idbGetAll(store) {
+    return new Promise((res, rej) => {
+        const tx = idb.transaction(store, 'readonly');
+        const req = tx.objectStore(store).getAll();
+        req.onsuccess = () => res(req.result);
+        req.onerror   = () => rej(req.error);
+    });
+}
+function idbPut(store, obj) {
+    return new Promise((res, rej) => {
+        const tx = idb.transaction(store, 'readwrite');
+        const req = tx.objectStore(store).put(obj);
+        req.onsuccess = () => res(req.result);
+        req.onerror   = () => rej(req.error);
+    });
+}
+function idbAdd(store, obj) {
+    return new Promise((res, rej) => {
+        const tx = idb.transaction(store, 'readwrite');
+        const req = tx.objectStore(store).add(obj);
+        req.onsuccess = () => res(req.result);
+        req.onerror   = () => rej(req.error);
+    });
+}
+function idbDelete(store, key) {
+    return new Promise((res, rej) => {
+        const tx = idb.transaction(store, 'readwrite');
+        const req = tx.objectStore(store).delete(key);
+        req.onsuccess = () => res(req.result);
+        req.onerror   = () => rej(req.error);
+    });
+}
+function idbGetByIndex(store, index, value) {
+    return new Promise((res, rej) => {
+        const tx  = idb.transaction(store, 'readonly');
+        const req = tx.objectStore(store).index(index).getAll(value);
+        req.onsuccess = () => res(req.result);
+        req.onerror   = () => rej(req.error);
+    });
+}
+
+async function cargarDatosIniciales() {
+    const usuarios = await idbGetAll('usuarios');
+    if (usuarios.length === 0) {
+        for (const u of DATOS_INICIALES.usuarios) {
+            await idbAdd('usuarios', u);
+        }
+        for (const it of DATOS_INICIALES.items) {
+            await idbAdd('items', it);
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// API — equivalente a window.farmacia de Electron
+// ─────────────────────────────────────────────────────────────────────────────
+
+const farmacia = {
+    async obtenerUsuarios() {
+        const all = await idbGetAll('usuarios');
+        return all.filter(u => u.activo === 1).sort((a,b) => a.id - b.id);
+    },
+    async obtenerTodosUsuarios() {
+        const all = await idbGetAll('usuarios');
+        return all.filter(u => u.activo === 1).sort((a,b) => a.id - b.id);
+    },
+    async obtenerUsuarioPorId(id) {
+        return await idbGet('usuarios', id);
+    },
+    async buscarItems(termino) {
+        const all = await idbGetAll('items');
+        const t = termino.toLowerCase();
+        return all
+            .filter(i => i.activo === 1 && (i.nombre.toLowerCase().includes(t) || i.presentacion.toLowerCase().includes(t)))
+            .sort((a,b) => a.nombre.localeCompare(b.nombre))
+            .slice(0, 30);
+    },
+    async obtenerTodosItems() {
+        const all = await idbGetAll('items');
+        return all.filter(i => i.activo === 1).sort((a,b) => a.tipo.localeCompare(b.tipo) || a.nombre.localeCompare(b.nombre));
+    },
+    async obtenerInventario() {
+        const all = await idbGetAll('items');
+        return all
+            .filter(i => i.activo === 1)
+            .sort((a,b) => a.tipo.localeCompare(b.tipo) || a.nombre.localeCompare(b.nombre))
+            .map(i => ({
+                ...i,
+                estado_stock: i.stock_actual > i.stock_minimo ? 'ok'
+                            : i.stock_actual === i.stock_minimo ? 'advertencia' : 'critico'
+            }));
+    },
+    async registrarVisita({ usuario_id, items }) {
+        try {
+            const ts = new Date().toISOString();
+            const visita_id = await idbAdd('visitas', { usuario_id, timestamp: ts, total_items: items.length });
+            for (const item of items) {
+                await idbAdd('salidas', {
+                    visita_id, usuario_id,
+                    item_id:     item.item_id,
+                    numero_lote: item.numero_lote,
+                    cantidad:    item.cantidad,
+                    destino:     item.destino,
+                    notas:       item.notas || '',
+                    timestamp:   ts
+                });
+                // Actualizar stock
+                const it = await idbGet('items', item.item_id);
+                if (it) {
+                    it.stock_actual = Math.max(0, it.stock_actual - item.cantidad);
+                    await idbPut('items', it);
+                }
+            }
+            return { ok: true, visita_id };
+        } catch(e) {
+            return { ok: false, error: e.message };
+        }
+    },
+    async obtenerVisita(visita_id) {
+        const v = await idbGet('visitas', visita_id);
+        const u = await idbGet('usuarios', v.usuario_id);
+        return { ...v, nombre_usuario: u ? u.nombre : '?', iniciales: u ? u.iniciales : '?', rol: u ? u.rol : '?' };
+    },
+    async obtenerSalidasDeVisita(visita_id) {
+        const all = await idbGetAll('salidas');
+        const salidas = all.filter(s => s.visita_id === visita_id);
+        const result = [];
+        for (const s of salidas) {
+            const it = await idbGet('items', s.item_id);
+            result.push({ ...s, nombre_item: it ? it.nombre : '?', presentacion: it ? it.presentacion : '?', tipo: it ? it.tipo : '?' });
+        }
+        return result;
+    },
+    async obtenerVisitasRecientes(limite = 50) {
+        const all = await idbGetAll('visitas');
+        const sorted = all.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, limite);
+        const result = [];
+        for (const v of sorted) {
+            const u = await idbGet('usuarios', v.usuario_id);
+            result.push({ ...v, nombre_usuario: u ? u.nombre : '?' });
+        }
+        return result;
+    },
+    async agregarItem({ nombre, presentacion, tipo, stock_actual, stock_minimo }) {
+        try {
+            const id = await idbAdd('items', { nombre, presentacion, tipo, stock_actual, stock_minimo, activo: 1 });
+            return { ok: true, id };
+        } catch(e) { return { ok: false, error: e.message }; }
+    },
+    async eliminarItem(id) {
+        try {
+            const salidas = await idbGetAll('salidas');
+            const tiene = salidas.some(s => s.item_id === id);
+            const it = await idbGet('items', id);
+            if (!it) return { ok: false, error: 'Ítem no encontrado' };
+            if (tiene) {
+                it.activo = 0;
+                await idbPut('items', it);
+                return { ok: true, message: 'Ítem desactivado' };
+            } else {
+                await idbDelete('items', id);
+                return { ok: true };
+            }
+        } catch(e) { return { ok: false, error: e.message }; }
+    },
+    async agregarUsuario({ nombre, iniciales, rol }) {
+        try {
+            const id = await idbAdd('usuarios', { nombre, iniciales: iniciales.toUpperCase(), rol, activo: 1 });
+            return { ok: true, id };
+        } catch(e) { return { ok: false, error: e.message }; }
+    },
+    async editarUsuario({ id, nombre, iniciales, rol }) {
+        try {
+            const u = await idbGet('usuarios', id);
+            if (!u) return { ok: false, error: 'Usuario no encontrado' };
+            await idbPut('usuarios', { ...u, nombre, iniciales: iniciales.toUpperCase(), rol });
+            return { ok: true };
+        } catch(e) { return { ok: false, error: e.message }; }
+    },
+    async eliminarUsuario(id) {
+        try {
+            const visitas = await idbGetAll('visitas');
+            const tiene = visitas.some(v => v.usuario_id === id);
+            const u = await idbGet('usuarios', id);
+            if (!u) return { ok: false, error: 'Usuario no encontrado' };
+            if (tiene) {
+                await idbPut('usuarios', { ...u, activo: 0 });
+                return { ok: true, message: 'Usuario desactivado' };
+            } else {
+                await idbDelete('usuarios', id);
+                return { ok: true };
+            }
+        } catch(e) { return { ok: false, error: e.message }; }
+    },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LÓGICA DE INTERFAZ (igual que app.js original, adaptado a usar farmacia.*)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const estado = {
+    usuarioActual:    null,
+    itemSeleccionado: null,
+    listaVisita:      [],
+    ultimaVisitaId:   null,
+};
+const COLORES = ['color-0','color-1','color-2','color-3','color-4'];
+
+// ── Utilidades ────────────────────────────────────────────────────────────────
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function mostrarPantalla(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('activa'));
+    document.getElementById(id).classList.add('activa');
+}
+function formatearFecha(dt) {
+    const d = dt ? new Date(dt) : new Date();
+    return d.toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+}
+function formatearHora(dt) {
+    const d = dt ? new Date(dt) : new Date();
+    return d.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
+}
+function toast(msg, tipo='info') {
+    const cont = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = 'toast toast-' + tipo;
+    el.textContent = msg;
+    cont.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+}
+function iniciarReloj() {
+    function tick() {
+        const ahora = new Date();
+        document.getElementById('reloj').textContent =
+            String(ahora.getHours()).padStart(2,'0') + ':' + String(ahora.getMinutes()).padStart(2,'0');
+        document.getElementById('fecha-actual').textContent = formatearFecha();
+    }
+    tick(); setInterval(tick, 10000);
+}
+function abrirModal(titulo, contenidoHTML, size='medium') {
+    const sizes = { small:'500px', medium:'700px', large:'900px' };
+    const existente = document.getElementById('modal-secundario');
+    if (existente) existente.remove();
+    const modal = document.createElement('div');
+    modal.id = 'modal-secundario';
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-box" style="max-width:${sizes[size]}">
+            <div class="modal-header">
+                <span class="modal-titulo">${titulo}</span>
+                <button class="modal-cerrar" onclick="document.getElementById('modal-secundario').remove()">&times;</button>
+            </div>
+            <div class="modal-body">${contenidoHTML}</div>
+        </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    document.body.appendChild(modal);
+    return modal;
+}
+
+// ── Pantalla 1: Usuarios ──────────────────────────────────────────────────────
+async function cargarUsuarios() {
+    const usuarios = await farmacia.obtenerUsuarios();
+    const grid = document.getElementById('usuarios-grid');
+    grid.innerHTML = '';
+    usuarios.forEach((usuario, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'usuario-btn';
+        btn.innerHTML =
+            '<div class="usuario-avatar ' + COLORES[idx % COLORES.length] + '">' + usuario.iniciales + '</div>' +
+            '<div><div class="usuario-nombre">' + usuario.nombre + '</div>' +
+            '<div class="usuario-rol">' + usuario.rol + '</div></div>';
+        btn.addEventListener('click', () => seleccionarUsuario(usuario, idx));
+        grid.appendChild(btn);
+    });
+}
+function seleccionarUsuario(usuario, colorIdx) {
+    estado.usuarioActual    = usuario;
+    estado.listaVisita      = [];
+    estado.itemSeleccionado = null;
+    const colorClase = COLORES[colorIdx % COLORES.length];
+    const badgeAvatar = document.getElementById('badge-avatar');
+    badgeAvatar.className   = 'badge-avatar ' + colorClase;
+    badgeAvatar.textContent = usuario.iniciales;
+    document.getElementById('badge-nombre').textContent = usuario.nombre;
+    document.getElementById('badge-rol').textContent    = usuario.rol;
+    limpiarPantalla2();
+    mostrarPantalla('pantalla-visita');
+    document.getElementById('buscador-input').focus();
+}
+function volverAUsuarios() {
+    estado.usuarioActual    = null;
+    estado.listaVisita      = [];
+    estado.itemSeleccionado = null;
+    limpiarPantalla2();
+    mostrarPantalla('pantalla-usuarios');
+}
+function nuevaVisita() {
+    estado.usuarioActual    = null;
+    estado.listaVisita      = [];
+    estado.itemSeleccionado = null;
+    estado.ultimaVisitaId   = null;
+    limpiarPantalla2();
+    mostrarPantalla('pantalla-usuarios');
+}
+
+// ── Pantalla 2: Visita ────────────────────────────────────────────────────────
+let debounceTimer = null;
+document.getElementById('buscador-input').addEventListener('input', e => {
+    clearTimeout(debounceTimer);
+    const termino = e.target.value.trim();
+    debounceTimer = setTimeout(() => ejecutarBusqueda(termino), 200);
+});
+
+async function ejecutarBusqueda(termino) {
+    const contenedor = document.getElementById('resultados-lista');
+    if (termino.length < 1) {
+        contenedor.innerHTML = '<div class="sin-resultados">Empieza a escribir para buscar</div>';
+        return;
+    }
+    const items = await farmacia.buscarItems(termino);
+    if (!items || items.length === 0) {
+        contenedor.innerHTML = '<div class="sin-resultados">Sin resultados para "' + termino + '"</div>';
+        return;
+    }
+    contenedor.innerHTML = '';
+    items.forEach(item => {
+        const est = item.stock_actual > item.stock_minimo ? 'ok'
+            : item.stock_actual === item.stock_minimo ? 'advertencia' : 'critico';
+        const etiqueta = est === 'ok' ? 'OK' : est === 'advertencia' ? 'ATENCION' : 'BAJO';
+        const el = document.createElement('div');
+        el.className = 'item-resultado';
+        el.innerHTML =
+            '<div class="item-info">' +
+                '<div class="item-nombre-res">' + item.nombre +
+                    '<span class="item-tipo-badge tipo-' + item.tipo + '">' + item.tipo + '</span>' +
+                '</div>' +
+                '<div class="item-presentacion-res">' + item.presentacion + '</div>' +
+            '</div>' +
+            '<div class="stock-badge stock-' + est + '">' + etiqueta + ' ' + item.stock_actual + '</div>';
+        el.addEventListener('click', () => seleccionarItem(item));
+        contenedor.appendChild(el);
+    });
+}
+function seleccionarItem(item) {
+    estado.itemSeleccionado = item;
+    document.getElementById('form-item-nombre').textContent = item.nombre;
+    document.getElementById('form-item-pres').textContent   = item.presentacion + ' - ' + item.tipo;
+    document.getElementById('input-lote').value     = '';
+    document.getElementById('input-cantidad').value = '1';
+    document.getElementById('select-destino').value = '';
+    document.getElementById('input-notas').value    = '';
+    document.getElementById('input-lote').classList.remove('error');
+    document.getElementById('form-item').classList.add('visible');
+    document.getElementById('input-lote').focus();
+}
+function limpiarSeleccion() {
+    estado.itemSeleccionado = null;
+    document.getElementById('form-item').classList.remove('visible');
+    document.getElementById('buscador-input').value = '';
+    document.getElementById('resultados-lista').innerHTML = '<div class="sin-resultados">Empieza a escribir para buscar</div>';
+    document.getElementById('buscador-input').focus();
+}
+function agregarItemAVisita() {
+    const item     = estado.itemSeleccionado;
+    const lote     = document.getElementById('input-lote').value.trim();
+    const cantidad = parseInt(document.getElementById('input-cantidad').value, 10);
+    const destino  = document.getElementById('select-destino').value;
+    const notas    = document.getElementById('input-notas').value.trim();
+    let hayError = false;
+    if (!lote) {
+        document.getElementById('input-lote').classList.add('error');
+        toast('El número de lote es obligatorio', 'error'); hayError = true;
+    } else { document.getElementById('input-lote').classList.remove('error'); }
+    if (!cantidad || cantidad < 1) { toast('La cantidad mínima es 1', 'error'); hayError = true; }
+    if (!destino) { toast('Selecciona el cuarto de destino', 'error'); hayError = true; }
+    if (hayError) return;
+    estado.listaVisita.push({ item_id: item.id, nombre_item: item.nombre,
+        presentacion: item.presentacion, tipo: item.tipo,
+        numero_lote: lote, cantidad, destino, notas });
+    actualizarListaVisita();
+    limpiarSeleccion();
+    toast(item.nombre + ' agregado', 'success');
+}
+function eliminarDeVisita(idx) {
+    const nombre = estado.listaVisita[idx].nombre_item;
+    estado.listaVisita.splice(idx, 1);
+    actualizarListaVisita();
+    toast(nombre + ' eliminado', 'info');
+}
+function actualizarListaVisita() {
+    const contenedor   = document.getElementById('lista-visita');
+    const lista        = estado.listaVisita;
+    const btnRegistrar = document.getElementById('btn-registrar');
+    const contador     = document.getElementById('visita-contador');
+    contador.textContent  = lista.length + ' ítem' + (lista.length !== 1 ? 's' : '');
+    btnRegistrar.disabled = lista.length === 0;
+    if (lista.length === 0) {
+        contenedor.innerHTML = '<div class="lista-vacia"><div class="lista-vacia-icon">🧺</div><div>Aún no has agregado ítems</div></div>';
+        return;
+    }
+    contenedor.innerHTML = '';
+    lista.forEach((entry, idx) => {
+        const el = document.createElement('div');
+        el.className = 'item-visita';
+        el.innerHTML =
+            '<div class="item-visita-info">' +
+                '<div class="item-visita-nombre">' + entry.nombre_item +
+                    ' <small style="color:var(--text-muted);font-size:11px">' + entry.presentacion + '</small></div>' +
+                '<div class="item-visita-meta">' +
+                    '<span>x ' + entry.cantidad + '</span>' +
+                    '<span>→ <strong>' + entry.destino + '</strong></span>' +
+                    '<span class="lote">Lote: ' + entry.numero_lote + '</span>' +
+                    (entry.notas ? '<span>' + entry.notas + '</span>' : '') +
+                '</div>' +
+            '</div>' +
+            '<button class="btn-eliminar-item" title="Eliminar">✕</button>';
+        el.querySelector('.btn-eliminar-item').addEventListener('click', () => eliminarDeVisita(idx));
+        contenedor.appendChild(el);
+    });
+}
+async function registrarVisita() {
+    if (estado.listaVisita.length === 0 || !estado.usuarioActual) return;
+    const btn = document.getElementById('btn-registrar');
+    btn.disabled = true; btn.textContent = 'Guardando...';
+    const resultado = await farmacia.registrarVisita({
+        usuario_id: estado.usuarioActual.id,
+        items: estado.listaVisita.map(e => ({
+            item_id: e.item_id, numero_lote: e.numero_lote,
+            cantidad: e.cantidad, destino: e.destino, notas: e.notas,
+        })),
+    });
+    if (!resultado.ok) {
+        toast('Error al guardar: ' + resultado.error, 'error');
+        btn.disabled = false; btn.textContent = '✓ Registrar visita'; return;
+    }
+    estado.ultimaVisitaId = resultado.visita_id;
+    mostrarConfirmacion(resultado.visita_id);
+}
+function limpiarPantalla2() {
+    estado.listaVisita      = [];
+    estado.itemSeleccionado = null;
+    const bi = document.getElementById('buscador-input');
+    if (bi) bi.value = '';
+    const rl = document.getElementById('resultados-lista');
+    if (rl) rl.innerHTML = '<div class="sin-resultados">Empieza a escribir para buscar</div>';
+    const fi = document.getElementById('form-item');
+    if (fi) fi.classList.remove('visible');
+    actualizarListaVisita();
+}
+
+// ── Pantalla 3: Confirmación ──────────────────────────────────────────────────
+async function mostrarConfirmacion(visita_id) {
+    const [visita, salidas] = await Promise.all([
+        farmacia.obtenerVisita(visita_id),
+        farmacia.obtenerSalidasDeVisita(visita_id),
+    ]);
+    const ts = new Date(visita.timestamp);
+    document.getElementById('conf-usuario').textContent = visita.nombre_usuario;
+    document.getElementById('conf-fecha').textContent   = formatearFecha(ts);
+    document.getElementById('conf-hora').textContent    = formatearHora(ts);
+    document.getElementById('conf-total').textContent   = salidas.length + ' ítems';
+    const lista = document.getElementById('conf-lista-items');
+    lista.innerHTML = '';
+    salidas.forEach((s, idx) => {
+        const el = document.createElement('div');
+        el.className = 'conf-item';
+        el.innerHTML =
+            '<div class="conf-item-num">' + (idx+1) + '</div>' +
+            '<div class="conf-item-info">' +
+                '<div class="conf-item-nombre">' + s.nombre_item + ' <small>' + s.presentacion + '</small></div>' +
+                '<div class="conf-item-meta">' +
+                    '<span class="lote">Lote ' + s.numero_lote + '</span>' +
+                    '<span>→ ' + s.destino + '</span>' +
+                    (s.notas ? '<span>' + s.notas + '</span>' : '') +
+                '</div>' +
+            '</div>' +
+            '<div class="conf-cantidad">' + s.cantidad + '</div>' +
+            '<div class="conf-destino">' + s.destino + '</div>';
+        lista.appendChild(el);
+    });
+    mostrarPantalla('pantalla-confirmacion');
+}
+
+// ── Inventario ────────────────────────────────────────────────────────────────
+async function mostrarInventario() {
+    const items = await farmacia.obtenerInventario();
+    let html = '<table class="inv-tabla"><thead><tr><th>Nombre</th><th>Presentación</th><th>Tipo</th><th>Stock actual</th><th>Stock mínimo</th><th>Estado</th></tr></thead><tbody>';
+    items.forEach(i => {
+        const etiqueta = i.estado_stock === 'ok' ? 'OK' : i.estado_stock === 'advertencia' ? 'ATENCIÓN' : 'BAJO';
+        html += '<tr><td>' + i.nombre + '</td><td>' + i.presentacion + '</td><td>' + i.tipo + '</td><td>' + i.stock_actual + '</td><td>' + i.stock_minimo + '</td>' +
+            '<td><span class="stock-badge stock-' + i.estado_stock + '">' + etiqueta + '</span></td></tr>';
+    });
+    html += '</tbody></table>';
+    abrirModal('Inventario actual', html, 'large');
+}
+
+// ── Bitácora ──────────────────────────────────────────────────────────────────
+async function mostrarBitacora() {
+    const visitas = await farmacia.obtenerVisitasRecientes();
+    let html = '<table class="inv-tabla"><thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Ítems</th></tr></thead><tbody>';
+    if (visitas.length === 0) {
+        html += '<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--text-muted)">Sin registros aún</td></tr>';
+    } else {
+        visitas.forEach(v => {
+            const ts = new Date(v.timestamp);
+            html += '<tr><td>' + formatearFecha(ts) + ' ' + formatearHora(ts) + '</td><td>' + v.nombre_usuario + '</td><td>' + v.total_items + '</td></tr>';
+        });
+    }
+    html += '</tbody></table>';
+    abrirModal('Bitácora de visitas recientes', html, 'large');
+}
+
+// ── Gestión de Inventario ─────────────────────────────────────────────────────
+async function mostrarGestionInventario() {
+    const items = await farmacia.obtenerTodosItems();
+    const medicamentos = items.filter(i => i.tipo === 'medicamento');
+    const materiales   = items.filter(i => i.tipo === 'material');
+    const html = `
+        <div class="modal-tabs">
+            <button class="modal-tab active" onclick="switchGestionTab('inventario-agregar')">➕ Agregar Ítem</button>
+            <button class="modal-tab" onclick="switchGestionTab('inventario-lista')">📋 Lista de Ítems</button>
+        </div>
+        <div id="inventario-agregar" class="gestion-tab-content">
+            <div class="gestion-form">
+                <div class="gestion-form-group">
+                    <label>Nombre del ítem *</label>
+                    <input type="text" id="item-nombre" placeholder="Ej. Amoxicilina, Vendas...">
+                </div>
+                <div class="gestion-form-row">
+                    <div class="gestion-form-group">
+                        <label>Presentación *</label>
+                        <input type="text" id="item-presentacion" placeholder="Cap., Tab., Frasco...">
+                    </div>
+                    <div class="gestion-form-group">
+                        <label>Tipo *</label>
+                        <select id="item-tipo">
+                            <option value="medicamento">💊 Medicamento</option>
+                            <option value="material">📦 Material</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="gestion-form-row">
+                    <div class="gestion-form-group">
+                        <label>Stock actual</label>
+                        <input type="number" id="item-stock-actual" value="0" min="0">
+                    </div>
+                    <div class="gestion-form-group">
+                        <label>Stock mínimo</label>
+                        <input type="number" id="item-stock-minimo" value="5" min="0">
+                    </div>
+                </div>
+                <div class="gestion-buttons">
+                    <button class="btn-gestion btn-gestion-primary" onclick="guardarNuevoItem()">✓ Guardar ítem</button>
+                    <button class="btn-gestion btn-gestion-secondary" onclick="document.getElementById('modal-secundario').remove()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+        <div id="inventario-lista" class="gestion-tab-content" style="display:none">
+            <div style="margin-bottom:20px">
+                <div class="seccion-label">Medicamentos (${medicamentos.length})</div>
+                ${medicamentos.length > 0 ? `
+                <table class="inv-tabla"><thead><tr><th>Nombre</th><th>Presentación</th><th>Stock</th><th>Mínimo</th><th></th></tr></thead><tbody>
+                ${medicamentos.map(i => `<tr>
+                    <td>${escapeHtml(i.nombre)}</td><td>${escapeHtml(i.presentacion)}</td>
+                    <td>${i.stock_actual}</td><td>${i.stock_minimo}</td>
+                    <td><button class="btn-tabla btn-tabla-eliminar" onclick="eliminarItemModal(${i.id}, '${escapeHtml(i.nombre)}')">🗑️ Eliminar</button></td>
+                </tr>`).join('')}
+                </tbody></table>` : '<div class="sin-resultados">No hay medicamentos</div>'}
+            </div>
+            <div>
+                <div class="seccion-label">Materiales (${materiales.length})</div>
+                ${materiales.length > 0 ? `
+                <table class="inv-tabla"><thead><tr><th>Nombre</th><th>Presentación</th><th>Stock</th><th>Mínimo</th><th></th></tr></thead><tbody>
+                ${materiales.map(i => `<tr>
+                    <td>${escapeHtml(i.nombre)}</td><td>${escapeHtml(i.presentacion)}</td>
+                    <td>${i.stock_actual}</td><td>${i.stock_minimo}</td>
+                    <td><button class="btn-tabla btn-tabla-eliminar" onclick="eliminarItemModal(${i.id}, '${escapeHtml(i.nombre)}')">🗑️ Eliminar</button></td>
+                </tr>`).join('')}
+                </tbody></table>` : '<div class="sin-resultados">No hay materiales</div>'}
+            </div>
+        </div>`;
+    abrirModal('Gestionar Inventario', html, 'large');
+}
+function switchGestionTab(tabId) {
+    document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.modal-tab[onclick*="${tabId}"]`).classList.add('active');
+    document.querySelectorAll('.gestion-tab-content').forEach(c => c.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+}
+async function guardarNuevoItem() {
+    const nombre       = document.getElementById('item-nombre').value.trim();
+    const presentacion = document.getElementById('item-presentacion').value.trim();
+    const tipo         = document.getElementById('item-tipo').value;
+    const stock_actual = parseInt(document.getElementById('item-stock-actual').value, 10) || 0;
+    const stock_minimo = parseInt(document.getElementById('item-stock-minimo').value, 10) || 0;
+    if (!nombre || !presentacion) { toast('Nombre y presentación son obligatorios', 'error'); return; }
+    const resultado = await farmacia.agregarItem({ nombre, presentacion, tipo, stock_actual, stock_minimo });
+    if (resultado.ok) { toast('"' + nombre + '" agregado', 'success'); mostrarGestionInventario(); }
+    else toast('Error: ' + resultado.error, 'error');
+}
+async function eliminarItemModal(id, nombre) {
+    if (confirm('¿Eliminar "' + nombre + '"?')) {
+        const resultado = await farmacia.eliminarItem(id);
+        if (resultado.ok) { toast('"' + nombre + '" eliminado', 'success'); mostrarGestionInventario(); }
+        else toast('Error: ' + resultado.error, 'error');
+    }
+}
+
+// ── Gestión de Perfiles ───────────────────────────────────────────────────────
+async function mostrarGestionPerfiles() {
+    const usuarios = await farmacia.obtenerTodosUsuarios();
+    const roles = ['Enfermería', 'Farmacia', 'Administración', 'Medicina'];
+    const html = `
+        <div class="modal-tabs">
+            <button class="modal-tab active" onclick="switchPerfilTab('perfil-agregar')">➕ Agregar Usuario</button>
+            <button class="modal-tab" onclick="switchPerfilTab('perfil-lista')">📋 Usuarios Existentes</button>
+        </div>
+        <div id="perfil-agregar" class="gestion-tab-content">
+            <div class="gestion-form">
+                <div class="gestion-form-group">
+                    <label>Nombre completo *</label>
+                    <input type="text" id="usuario-nombre" placeholder="Ej. María González">
+                </div>
+                <div class="gestion-form-row">
+                    <div class="gestion-form-group">
+                        <label>Iniciales *</label>
+                        <input type="text" id="usuario-iniciales" placeholder="Ej. MG" maxlength="3" style="text-transform:uppercase">
+                    </div>
+                    <div class="gestion-form-group">
+                        <label>Rol *</label>
+                        <select id="usuario-rol">${roles.map(r => '<option value="'+r+'">'+r+'</option>').join('')}</select>
+                    </div>
+                </div>
+                <div class="gestion-buttons">
+                    <button class="btn-gestion btn-gestion-primary" onclick="guardarNuevoUsuario()">✓ Guardar usuario</button>
+                    <button class="btn-gestion btn-gestion-secondary" onclick="document.getElementById('modal-secundario').remove()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+        <div id="perfil-lista" class="gestion-tab-content" style="display:none">
+            <div class="usuarios-lista">
+                ${usuarios.length > 0 ? usuarios.map(u => `
+                <div class="usuario-item">
+                    <div>
+                        <div class="usuario-item-nombre">${escapeHtml(u.nombre)}</div>
+                        <div class="usuario-item-rol">${u.rol} · ${u.iniciales}</div>
+                    </div>
+                    <div class="tabla-acciones">
+                        <button class="btn-tabla btn-tabla-editar" onclick="editarUsuarioModal(${u.id}, '${escapeHtml(u.nombre)}', '${u.iniciales}', '${u.rol}')">✏️ Editar</button>
+                        <button class="btn-tabla btn-tabla-eliminar" onclick="eliminarUsuarioModal(${u.id}, '${escapeHtml(u.nombre)}')">🗑️ Eliminar</button>
+                    </div>
+                </div>`).join('') : '<div class="sin-resultados">No hay usuarios</div>'}
+            </div>
+        </div>`;
+    abrirModal('Gestionar Perfiles', html, 'medium');
+}
+function switchPerfilTab(tabId) {
+    document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.modal-tab[onclick*="${tabId}"]`).classList.add('active');
+    document.querySelectorAll('.gestion-tab-content').forEach(c => c.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+}
+async function guardarNuevoUsuario() {
+    const nombre    = document.getElementById('usuario-nombre').value.trim();
+    const iniciales = document.getElementById('usuario-iniciales').value.trim().toUpperCase();
+    const rol       = document.getElementById('usuario-rol').value;
+    if (!nombre || !iniciales) { toast('Nombre e iniciales son obligatorios', 'error'); return; }
+    const resultado = await farmacia.agregarUsuario({ nombre, iniciales, rol });
+    if (resultado.ok) { toast('"' + nombre + '" agregado', 'success'); document.getElementById('modal-secundario').remove(); await cargarUsuarios(); }
+    else toast('Error: ' + resultado.error, 'error');
+}
+function editarUsuarioModal(id, nombre, iniciales, rol) {
+    const roles = ['Enfermería', 'Farmacia', 'Administración', 'Medicina'];
+    const html = `
+        <div class="gestion-form">
+            <div class="gestion-form-group">
+                <label>Nombre completo *</label>
+                <input type="text" id="edit-usuario-nombre" value="${escapeHtml(nombre)}">
+            </div>
+            <div class="gestion-form-row">
+                <div class="gestion-form-group">
+                    <label>Iniciales *</label>
+                    <input type="text" id="edit-usuario-iniciales" value="${iniciales}" maxlength="3" style="text-transform:uppercase">
+                </div>
+                <div class="gestion-form-group">
+                    <label>Rol *</label>
+                    <select id="edit-usuario-rol">${roles.map(r => '<option value="'+r+'" '+(r===rol?'selected':'')+'>'+r+'</option>').join('')}</select>
+                </div>
+            </div>
+            <div class="gestion-buttons">
+                <button class="btn-gestion btn-gestion-primary" onclick="confirmarEditarUsuario(${id})">✓ Guardar cambios</button>
+                <button class="btn-gestion btn-gestion-secondary" onclick="mostrarGestionPerfiles()">Cancelar</button>
+            </div>
+        </div>`;
+    abrirModal('✏️ Editar Usuario', html, 'small');
+}
+async function confirmarEditarUsuario(id) {
+    const nombre    = document.getElementById('edit-usuario-nombre').value.trim();
+    const iniciales = document.getElementById('edit-usuario-iniciales').value.trim().toUpperCase();
+    const rol       = document.getElementById('edit-usuario-rol').value;
+    if (!nombre || !iniciales) { toast('Nombre e iniciales no pueden estar vacíos', 'error'); return; }
+    const resultado = await farmacia.editarUsuario({ id, nombre, iniciales, rol });
+    if (resultado.ok) { toast('"' + nombre + '" actualizado', 'success'); await cargarUsuarios(); mostrarGestionPerfiles(); }
+    else toast('Error: ' + resultado.error, 'error');
+}
+async function eliminarUsuarioModal(id, nombre) {
+    if (confirm('¿Eliminar a "' + nombre + '"?')) {
+        const resultado = await farmacia.eliminarUsuario(id);
+        if (resultado.ok) { toast('"' + nombre + '" eliminado', 'success'); document.getElementById('modal-secundario').remove(); await cargarUsuarios(); }
+        else toast('Error: ' + resultado.error, 'error');
+    }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+    idb = await abrirDB();
+    await cargarDatosIniciales();
+    iniciarReloj();
+    await cargarUsuarios();
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+}
+
+init();
+</script>
+</body>
+</html>
